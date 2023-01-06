@@ -59,6 +59,20 @@ class WebSocketClient {
   clearMessageHandlers() {
     this.handlers = [];
   }
+
+  publish<TMessage>(message: TMessage) {
+    const content = JSON.stringify(message);
+
+    if (!this.canPublish()) throw new Error("client not connected");
+
+    this.socket?.send(content);
+  }
+
+  private canPublish(): boolean {
+    return (
+      this.socket === null || this.socket === undefined || !this.isConnected()
+    );
+  }
 }
 
 export { OnConnectFunc, TypeAssert, MessageHandlerCallback, MessageHandler };
