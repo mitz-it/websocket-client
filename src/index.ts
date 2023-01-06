@@ -77,12 +77,12 @@ class WebSocketClient {
   }
 
   private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
+    const message = JSON.parse(event.data);
+
     for (let index = 0; index < handlers.length; index++) {
       const handler = handlers[index];
 
       const { assert, callback } = handler;
-
-      const message = JSON.parse(event.data);
 
       if (!assert(message)) continue;
 
