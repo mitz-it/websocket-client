@@ -17,15 +17,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.7.0
-          registry-url: https://registry.npmjs.org/
-      
+    
+    - name: Setup Registry
+        shell: bash
+        run: |
+          echo //registry.npmjs.org/:_authToken=${{ secrets.MITZ_IT_NPM_TOKEN }} >> ~/.npmrc |
+          echo @mitz-it:registry=https://registry.npmjs.org/ >> ~/.npmrc
+
       - name: Build
         shell: bash 
         run: npm run build
-
-      - name: CI
-        shell: bash 
-        run: npm ci
       
       - name: Publish
         shell: bash  
