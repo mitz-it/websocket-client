@@ -62,9 +62,7 @@ class WebSocketClient {
   }
 
   private canPublish(): boolean {
-    return (
-      this.socket === null || this.socket === undefined || !this.isConnected()
-    );
+    return this.socket !== undefined && this.isConnected();
   }
 
   private handleMessage(event: MessageEvent) {
