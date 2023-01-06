@@ -50,22 +50,30 @@ class WebSocketClient {
 
   removeMessageHandler(key: string) {
     this.handlers = this.handlers.filter((resolver) => resolver.key != key);
+    this.setSocketHandlers();
   }
 
   clearMessageHandlers() {
     this.handlers = [];
+    this.setSocketHandlers();
   }
 
   publish<TMessage>(message: TMessage) {
-    if (!this.canPublish()) throw new Error("client not connected");
+    if (this.socket == undefined || !this.isConnected()) {
+      throw new Error("client not connected");
+    }
 
     const content = JSON.stringify(message);
 
-    this.socket?.send(content);
+    this.socket.send(content);
   }
 
-  private canPublish(): boolean {
-    return this.socket !== undefined && this.isConnected();
+  private setSocketHandlers() {
+    if (this.socket == undefined || !this.isConnected()) return;
+
+    this.socket.onmessage = (event: MessageEvent) => {
+      this.handleMessage(event, this.handlers);
+    };
   }
 
   private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
