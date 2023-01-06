@@ -12,11 +12,11 @@ npm i @mitz-it/websocket-client
 
 Strongly typed messages are supported through strongly typed handlers (`MessageHandler<TMessage>`):
 
-| Property | Type                                    |
-| -------- | --------------------------------------- |
-| key      | `string`                                |
-| callback | `(message: TMessage) => void`           |
-| assert   | `(message: any) => message is TMessage` |
+| Property | Type                               | Definition                              |
+| -------- | ---------------------------------- | --------------------------------------- |
+| key      | `string`                           | `string`                                |
+| callback | `MessageHandlerCallback<TMessage>` | `(message: TMessage) => void`           |
+| assert   | `TypeAssertion<TMessage>`          | `(message: any) => message is TMessage` |
 
 Define your handler as follows:
 

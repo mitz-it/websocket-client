@@ -1,13 +1,13 @@
 type ConnectionHandler = () => void;
 
-type TypeAssert<TMessage> = (value: any) => value is TMessage;
+type TypeAssertion<TMessage> = (value: any) => value is TMessage;
 
 type MessageHandlerCallback<TMessage> = (message: TMessage) => void;
 
 interface MessageHandler<TMessage> {
   key: string;
   callback: MessageHandlerCallback<TMessage>;
-  assert: TypeAssert<TMessage>;
+  assert: TypeAssertion<TMessage>;
 }
 
 class WebSocketClient {
@@ -94,7 +94,7 @@ class WebSocketClient {
 
 export {
   ConnectionHandler,
-  TypeAssert,
+  TypeAssertion,
   MessageHandlerCallback,
   MessageHandler,
 };
