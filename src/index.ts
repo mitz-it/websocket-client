@@ -13,7 +13,6 @@ interface MessageHandler<TMessage> {
 class WebSocketClient {
   private url: string = "";
   private socket?: WebSocket;
-  private connected: boolean = false;
   private handlers: MessageHandler<any>[] = [];
 
   constructor(url: string) {
@@ -21,20 +20,18 @@ class WebSocketClient {
   }
 
   isConnected(): boolean {
-    return this.connected;
+    return this.socket != undefined && this.socket.readyState == WebSocket.OPEN;
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      this.connected = true;
       if (onConnect) onConnect();
       if (this.socket != undefined) this.socket.onmessage = this.handleMessage;
     };
 
     this.socket.onclose = () => {
-      this.connected = false;
       if (onClose) onClose();
     };
   }
