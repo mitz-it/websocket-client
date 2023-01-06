@@ -1,4 +1,4 @@
-type OnConnectFunc = () => void;
+type ConnectionHandler = () => void;
 
 type TypeAssert<TMessage> = (value: any) => value is TMessage;
 
@@ -24,12 +24,17 @@ class WebSocketClient {
     return this.connected;
   }
 
-  connect(onConnect?: OnConnectFunc) {
+  connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      this.connected = false;
+      this.connected = true;
       if (onConnect) onConnect();
+    };
+
+    this.socket.onclose = () => {
+      this.connected = false;
+      if (onClose) onClose();
     };
 
     this.socket.onmessage = (event: MessageEvent) => {
@@ -46,6 +51,12 @@ class WebSocketClient {
         break;
       }
     };
+  }
+
+  disconnect() {
+    if (this.socket == undefined) return;
+
+    this.socket.close();
   }
 
   addMessageHandler<TMessage>(handler: MessageHandler<TMessage>) {
@@ -75,5 +86,10 @@ class WebSocketClient {
   }
 }
 
-export { OnConnectFunc, TypeAssert, MessageHandlerCallback, MessageHandler };
+export {
+  ConnectionHandler,
+  TypeAssert,
+  MessageHandlerCallback,
+  MessageHandler,
+};
 export default WebSocketClient;
