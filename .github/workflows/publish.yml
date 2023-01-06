@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18.7.0
     
-    - name: Setup Registry
+      - name: Setup Registry
         shell: bash
         run: |
           echo //registry.npmjs.org/:_authToken=${{ secrets.MITZ_IT_NPM_TOKEN }} >> ~/.npmrc |
