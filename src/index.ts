@@ -28,7 +28,10 @@ class WebSocketClient {
 
     this.socket.onopen = () => {
       if (onConnect) onConnect();
-      if (this.socket != undefined) this.socket.onmessage = this.handleMessage;
+      if (this.socket != undefined) {
+        this.socket.onmessage = (event: MessageEvent) =>
+          this.handleMessage(event, this.handlers);
+      }
     };
 
     this.socket.onclose = () => {
@@ -65,9 +68,9 @@ class WebSocketClient {
     return this.socket !== undefined && this.isConnected();
   }
 
-  private handleMessage(event: MessageEvent) {
-    for (let index = 0; index < this.handlers.length; index++) {
-      const handler = this.handlers[index];
+  private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
+    for (let index = 0; index < handlers.length; index++) {
+      const handler = handlers[index];
 
       const { assert, callback } = handler;
 
