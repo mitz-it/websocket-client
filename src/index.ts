@@ -30,32 +30,17 @@ class WebSocketClient {
     this.socket.onopen = () => {
       this.connected = true;
       if (onConnect) onConnect();
+      if (this.socket != undefined) this.socket.onmessage = this.handleMessage;
     };
 
     this.socket.onclose = () => {
       this.connected = false;
       if (onClose) onClose();
     };
-
-    this.socket.onmessage = (event: MessageEvent) => {
-      for (let index = 0; index < this.handlers.length; index++) {
-        const handler = this.handlers[index];
-
-        const { assert, callback } = handler;
-
-        const message = JSON.parse(event.data);
-
-        if (!assert(message)) continue;
-
-        callback(message);
-        break;
-      }
-    };
   }
 
   disconnect() {
     if (this.socket == undefined) return;
-
     this.socket.close();
   }
 
@@ -72,9 +57,9 @@ class WebSocketClient {
   }
 
   publish<TMessage>(message: TMessage) {
-    const content = JSON.stringify(message);
-
     if (!this.canPublish()) throw new Error("client not connected");
+
+    const content = JSON.stringify(message);
 
     this.socket?.send(content);
   }
@@ -83,6 +68,21 @@ class WebSocketClient {
     return (
       this.socket === null || this.socket === undefined || !this.isConnected()
     );
+  }
+
+  private handleMessage(event: MessageEvent) {
+    for (let index = 0; index < this.handlers.length; index++) {
+      const handler = this.handlers[index];
+
+      const { assert, callback } = handler;
+
+      const message = JSON.parse(event.data);
+
+      if (!assert(message)) continue;
+
+      callback(message);
+      break;
+    }
   }
 }
 
