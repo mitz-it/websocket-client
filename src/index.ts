@@ -1,3 +1,5 @@
+import WebSocket, { MessageEvent } from "ws/index.mjs";
+
 type ConnectionHandler = () => void;
 
 type TypeAssertion<TMessage> = (value: any) => value is TMessage;
@@ -24,7 +26,11 @@ class WebSocketClient {
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
-    this.socket = new WebSocket(this.url);
+    this.socket = new WebSocket(this.url, {
+      headers: {
+        Authentication: "Bearer xxx",
+      },
+    });
 
     this.socket.onopen = () => {
       if (onConnect) onConnect();
@@ -77,7 +83,7 @@ class WebSocketClient {
   }
 
   private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
-    const message = JSON.parse(event.data);
+    const message = JSON.parse(event.data as never);
 
     for (let index = 0; index < handlers.length; index++) {
       const handler = handlers[index];

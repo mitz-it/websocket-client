@@ -22,6 +22,10 @@
   "author": "Mitz IT",
   "license": "ISC",
   "devDependencies": {
+    "@types/ws": "^8.5.4",
     "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "ws": "^8.12.0"
   }
 }
