@@ -5,10 +5,9 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "inlineSources": true,
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "outDir": "./lib",
-    "strict": true,
+    "strict": false,
     "allowJs": true,
     "sourceMap": true
   },
