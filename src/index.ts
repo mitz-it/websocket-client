@@ -1,4 +1,4 @@
-import * as ws from "ws";
+import WebSocket, { MessageEvent } from "ws";
 
 type ConnectionHandler = () => void;
 
@@ -14,7 +14,7 @@ interface MessageHandler<TMessage> {
 
 class WebSocketClient {
   private url: string = "";
-  private socket?: ws.WebSocket;
+  private socket?: WebSocket;
   private handlers: MessageHandler<any>[] = [];
   private headers: any;
 
@@ -24,20 +24,18 @@ class WebSocketClient {
   }
 
   isConnected(): boolean {
-    return (
-      this.socket != undefined && this.socket.readyState == ws.WebSocket.OPEN
-    );
+    return this.socket != undefined && this.socket.readyState == WebSocket.OPEN;
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
-    this.socket = new ws.WebSocket(this.url, {
+    this.socket = new WebSocket(this.url, {
       headers: this.headers,
     });
 
     this.socket.onopen = () => {
       if (onConnect) onConnect();
       if (this.socket != undefined) {
-        this.socket.onmessage = (event: ws.MessageEvent) =>
+        this.socket.onmessage = (event: MessageEvent) =>
           this.handleMessage(event, this.handlers);
       }
     };
@@ -79,15 +77,12 @@ class WebSocketClient {
   private setSocketHandlers() {
     if (this.socket == undefined || !this.isConnected()) return;
 
-    this.socket.onmessage = (event: ws.MessageEvent) => {
+    this.socket.onmessage = (event: MessageEvent) => {
       this.handleMessage(event, this.handlers);
     };
   }
 
-  private handleMessage(
-    event: ws.MessageEvent,
-    handlers: MessageHandler<any>[]
-  ) {
+  private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
     const message = JSON.parse(event.data as never);
 
     for (let index = 0; index < handlers.length; index++) {
