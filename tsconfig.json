@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "lib": ["esnext", "ES6"],
     "module": "CommonJS",
+    "moduleResolution": "node",
+    "inlineSources": true,
+    "types": ["node"],
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "outDir": "./lib",
-    "strict": true
+    "strict": true,
+    "allowJs": true,
+    "sourceMap": true
   },
   "include": ["src", "node_modules/ws", "node_modules/@types/ws"],
   "exclude": ["**/__tests__/*"]

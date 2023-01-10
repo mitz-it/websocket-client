@@ -24,7 +24,9 @@ class WebSocketClient {
   }
 
   isConnected(): boolean {
-    return this.socket != undefined && this.socket.readyState == WebSocket.OPEN;
+    return (
+      this.socket != undefined && this.socket.readyState == ws.WebSocket.OPEN
+    );
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
