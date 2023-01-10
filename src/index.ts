@@ -1,3 +1,5 @@
+import { WebSocket, MessageEvent } from "ws";
+
 type ConnectionHandler = () => void;
 
 type TypeAssertion<TMessage> = (value: any) => value is TMessage;
@@ -14,9 +16,11 @@ class WebSocketClient {
   private url: string = "";
   private socket?: WebSocket;
   private handlers: MessageHandler<any>[] = [];
+  private headers: any;
 
-  constructor(url: string) {
+  constructor(url: string, headers?: any) {
     this.url = url;
+    this.headers = headers;
   }
 
   isConnected(): boolean {
@@ -24,7 +28,9 @@ class WebSocketClient {
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
-    this.socket = new WebSocket(this.url);
+    this.socket = new WebSocket(this.url, {
+      headers: this.headers,
+    });
 
     this.socket.onopen = () => {
       if (onConnect) onConnect();
@@ -77,7 +83,7 @@ class WebSocketClient {
   }
 
   private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
-    const message = JSON.parse(event.data);
+    const message = JSON.parse(event.data as never);
 
     for (let index = 0; index < handlers.length; index++) {
       const handler = handlers[index];
