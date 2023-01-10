@@ -11,6 +11,6 @@
     "allowJs": true,
     "sourceMap": true
   },
-  "include": ["src"],
+  "include": ["src", "node_modules/@types/ws"],
   "exclude": ["**/__tests__/*", "node_modules"]
 }

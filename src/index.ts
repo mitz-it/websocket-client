@@ -1,4 +1,4 @@
-import WebSocket, { MessageEvent } from "ws";
+import WebSocket, { MessageEvent } from "ws/index.mjs";
 
 type ConnectionHandler = () => void;
 
