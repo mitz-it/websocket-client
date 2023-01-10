@@ -5,7 +5,6 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "inlineSources": true,
-    "types": ["node"],
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "outDir": "./lib",
@@ -13,6 +12,6 @@
     "allowJs": true,
     "sourceMap": true
   },
-  "include": ["src", "node_modules/ws", "node_modules/@types/ws"],
-  "exclude": ["**/__tests__/*"]
+  "include": ["src"],
+  "exclude": ["**/__tests__/*", "node_modules"]
 }
