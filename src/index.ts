@@ -16,9 +16,11 @@ class WebSocketClient {
   private url: string = "";
   private socket?: WebSocket;
   private handlers: MessageHandler<any>[] = [];
+  private headers: any;
 
-  constructor(url: string) {
+  constructor(url: string, headers?: any) {
     this.url = url;
+    this.headers = headers;
   }
 
   isConnected(): boolean {
@@ -27,9 +29,7 @@ class WebSocketClient {
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
     this.socket = new WebSocket(this.url, {
-      headers: {
-        Authentication: "Bearer xxx",
-      },
+      headers: this.headers,
     });
 
     this.socket.onopen = () => {
