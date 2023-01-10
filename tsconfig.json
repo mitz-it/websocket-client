@@ -4,14 +4,14 @@
     "lib": ["esnext", "ES6"],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "inlineSources": true,
+    "inlineSources": false,
     "esModuleInterop": true,
     "declaration": true,
     "outDir": "./lib",
     "strict": false,
     "allowJs": true,
-    "sourceMap": true
+    "sourceMap": false
   },
   "include": ["src"],
-  "exclude": ["**/__tests__/*", "node_modules"]
+  "exclude": ["**/__tests__/*"]
 }
