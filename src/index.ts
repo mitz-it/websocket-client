@@ -1,5 +1,3 @@
-import { WebSocket, MessageEvent } from "ws";
-
 type ConnectionHandler = () => void;
 
 type TypeAssertion<TMessage> = (value: any) => value is TMessage;
@@ -16,11 +14,9 @@ class WebSocketClient {
   private url: string = "";
   private socket?: WebSocket;
   private handlers: MessageHandler<any>[] = [];
-  private headers: any;
 
-  constructor(url: string, headers?: any) {
+  constructor(url: string) {
     this.url = url;
-    this.headers = headers;
   }
 
   isConnected(): boolean {
@@ -28,9 +24,7 @@ class WebSocketClient {
   }
 
   connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
-    this.socket = new WebSocket(this.url, {
-      headers: this.headers,
-    });
+    this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
       if (onConnect) onConnect();
