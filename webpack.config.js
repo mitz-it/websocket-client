@@ -17,10 +17,12 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "lib"),
     filename: "index.js",
-    library: "@mitz-it/websocket-client",
-    sourceMapFilename: "index.d.ts",
-    libraryTarget: "umd",
-    umdNamedDefine: true,
+    library: {
+      name: "MitzITWebSocketClient",
+      type: "umd",
+      export: "default",
+      umdNamedDefine: true,
+    },
     globalObject: "this",
   },
 };
