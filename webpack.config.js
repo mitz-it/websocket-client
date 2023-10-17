@@ -18,7 +18,7 @@ module.exports = {
     path: path.resolve(__dirname, "lib"),
     filename: "index.js",
     library: {
-      name: "MitzITWebSocketClient",
+      name: "WebSocketClient",
       type: "umd",
       export: "default",
       umdNamedDefine: true,
