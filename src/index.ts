@@ -95,8 +95,9 @@ class WebSocketClient {
   }
 }
 
-export {
+export type {
   OnOpenHandler,
+  OnReconnectHandler,
   OnCloseHandler,
   TypeAssertion,
   OnMessageCallback,
