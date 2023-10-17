@@ -1,101 +1,106 @@
-type ConnectionHandler = () => void;
+type OnOpenHandler = (e: Event) => void;
+
+type OnReconnectHandler = () => void;
+
+type OnCloseHandler =
+  | ((e: CloseEvent, reconnect?: OnReconnectHandler) => void)
+  | (() => void);
 
 type TypeAssertion<TMessage> = (value: any) => value is TMessage;
 
-type MessageHandlerCallback<TMessage> = (message: TMessage) => void;
+type OnMessageCallback<TMessage> = (message: TMessage) => void;
 
-interface MessageHandler<TMessage> {
+type MessageHandler<TMessage> = {
   key: string;
-  callback: MessageHandlerCallback<TMessage>;
+  callback: OnMessageCallback<TMessage>;
   assert: TypeAssertion<TMessage>;
-}
+};
 
 class WebSocketClient {
   private url: string = "";
+  private protocols?: string | string[];
   private socket?: WebSocket;
-  private handlers: MessageHandler<any>[] = [];
+  private handlers: Set<MessageHandler<any>> = new Set();
 
-  constructor(url: string) {
+  constructor(url: string, protocols?: string | string[]) {
     this.url = url;
+    this.protocols = protocols;
   }
 
-  isConnected(): boolean {
-    return this.socket != undefined && this.socket.readyState == WebSocket.OPEN;
+  connected(): boolean {
+    return this.socket?.readyState === WebSocket.OPEN;
   }
 
-  connect(onConnect?: ConnectionHandler, onClose?: ConnectionHandler) {
-    this.socket = new WebSocket(this.url);
+  connect(onopen?: OnOpenHandler, onclose?: OnCloseHandler) {
+    this.socket = new WebSocket(this.url, this.protocols);
 
-    this.socket.onopen = () => {
-      if (onConnect) onConnect();
-      if (this.socket != undefined) {
-        this.socket.onmessage = (event: MessageEvent) =>
-          this.handleMessage(event, this.handlers);
-      }
+    this.socket.onopen = (e) => {
+      onopen?.(e);
+      this.socket!.onmessage = this.handleMessage.bind(this);
     };
 
-    this.socket.onclose = () => {
-      if (onClose) onClose();
+    this.socket.onclose = (e) => {
+      if (onclose) {
+        const reconnect = this.reconnect.bind(this, onopen, onclose);
+        onclose(e, reconnect);
+      }
     };
   }
 
   disconnect() {
-    if (this.socket == undefined) return;
-    this.socket.close();
+    this.socket?.close();
   }
 
   addMessageHandler<TMessage>(handler: MessageHandler<TMessage>) {
-    this.handlers = [...this.handlers, handler];
+    this.handlers.add(handler);
   }
 
   removeMessageHandler(key: string) {
-    this.handlers = this.handlers.filter((resolver) => resolver.key != key);
-    this.setSocketHandlers();
+    for (let handler of this.handlers) {
+      if (handler.key === key) {
+        this.handlers.delete(handler);
+        break;
+      }
+    }
   }
 
   clearMessageHandlers() {
-    this.handlers = [];
-    this.setSocketHandlers();
+    this.handlers.clear();
   }
 
   publish<TMessage>(message: TMessage) {
-    if (this.socket == undefined || !this.isConnected()) {
+    if (!this.connected()) {
       throw new Error("client not connected");
     }
 
     const content = JSON.stringify(message);
 
-    this.socket.send(content);
+    this.socket!.send(content);
   }
 
-  private setSocketHandlers() {
-    if (this.socket == undefined || !this.isConnected()) return;
-
-    this.socket.onmessage = (event: MessageEvent) => {
-      this.handleMessage(event, this.handlers);
-    };
+  private reconnect(onopen?: OnOpenHandler, onclose?: OnCloseHandler) {
+    this.connect(onopen, onclose);
   }
 
-  private handleMessage(event: MessageEvent, handlers: MessageHandler<any>[]) {
-    const message = JSON.parse(event.data as never);
+  private handleMessage(event: MessageEvent) {
+    const message = JSON.parse(event.data as string);
 
-    for (let index = 0; index < handlers.length; index++) {
-      const handler = handlers[index];
-
+    for (let handler of this.handlers) {
       const { assert, callback } = handler;
-
-      if (!assert(message)) continue;
-
-      callback(message);
-      break;
+      if (assert(message)) {
+        callback(message);
+        break;
+      }
     }
   }
 }
 
 export {
-  ConnectionHandler,
+  OnOpenHandler,
+  OnCloseHandler,
   TypeAssertion,
-  MessageHandlerCallback,
+  OnMessageCallback,
   MessageHandler,
 };
+
 export default WebSocketClient;
